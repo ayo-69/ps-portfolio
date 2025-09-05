@@ -4,7 +4,7 @@ export async function GET(request) {
   try {
     // Direct redirect to Dropbox resume link
     const dropboxUrl =
-      "https://www.dropbox.com/scl/fi/hc614o6g7vj20gqpqox72/Isaac-Hayab-Resume.pdf?rlkey=txhxhwh5l4rr8mpityaj6s0sx&st=565q5o47&dl=1";
+      "https://www.dropbox.com/scl/fi/dyu3ix359fsjyco1ileto/Praise_Sylvester_CV-new-update.pdf?rlkey=jjdjmaz15m0xoze9ku5xmla5k&st=9wf3soi7&dl=1";
 
     return Response.redirect(dropboxUrl, 302);
   } catch (error) {

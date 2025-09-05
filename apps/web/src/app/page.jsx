@@ -11,6 +11,47 @@ import {
 
 export default function PortfolioPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    budget: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    try {
+      const response = await fetch("https://praise-email-service.onrender.com/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      console.log("Response status:", response.status);
+      const responseBody = await response.text();
+      console.log("Response body:", responseBody);
+
+      if (response.ok) {
+        setSubmitStatus("success");
+        setFormData({ name: "", email: "", budget: "", message: "" });
+      } else {
+        setSubmitStatus("error");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitStatus("error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const portfolioItems = [
     {
@@ -139,11 +180,11 @@ export default function PortfolioPage() {
               </a>
             </nav>
             <a
-                href="#contact"
-                className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                Hire Me
-              </a>
+              href="#contact"
+              className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              Hire Me
+            </a>
           </div>
         </div>
       </header>
@@ -394,7 +435,7 @@ export default function PortfolioPage() {
                 </div>
                 <div className="flex items-center gap-4">
                   <Phone className="text-gray-400" size={20} />
-                  <span>+1 (555) 123-4567</span>
+                  <span>+234-7073-739-757</span>
                 </div>
                 <div className="flex items-center gap-4">
                   <Clock className="text-gray-400" size={20} />
@@ -404,13 +445,17 @@ export default function PortfolioPage() {
             </div>
 
             <div className="bg-gray-900 p-8 rounded-xl">
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
                   <label className="block text-sm font-medium mb-2">Name</label>
                   <input
                     type="text"
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent"
                     placeholder="Your name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
                 <div>
@@ -421,18 +466,24 @@ export default function PortfolioPage() {
                     type="email"
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent"
                     placeholder="your@email.com"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Project Budget
                   </label>
-                  <select className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent">
-                    <option>$1,000 - $5,000</option>
-                    <option>$5,000 - $10,000</option>
-                    <option>$10,000 - $25,000</option>
-                    <option>$25,000+</option>
-                  </select>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent"
+                    placeholder="Your project budget"
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
@@ -442,11 +493,29 @@ export default function PortfolioPage() {
                     rows={4}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent"
                     placeholder="Tell me about your project..."
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
                   ></textarea>
                 </div>
-                <button className="w-full bg-white text-black py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                  Send Message
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-white text-black py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </button>
+                {submitStatus === "success" && (
+                  <p className="text-green-400 text-center">
+                    Message sent successfully!
+                  </p>
+                )}
+                {submitStatus === "error" && (
+                  <p className="text-red-400 text-center">
+                    Something went wrong. Please try again.
+                  </p>
+                )}
               </form>
             </div>
           </div>
